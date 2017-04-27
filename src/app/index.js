@@ -4,19 +4,59 @@ const React = require('react')
 const ReactDom = require('react-dom')
 require('./css/index.css')
 
+// react router gives us two components to work with
+// router component which keeps url in sync with the UI of the application
+// route component which matches our routes to the app components
+import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
+
 // Module requires
 // we can use this require statement/split up our code is because we are using webpack
 const TodoItem = require('./todo-item')
 const AddItem = require('./add-item')
+const About = require('./about')
+
+const App = React.createClass({
+  render: function() {
+    return (
+      <Router>
+        <Switch>
+          <Route exact={true} path={'/'} component={TodoComponent}></Route>
+          <Route path={'/about'} component={About}></Route>
+        </Switch>
+      </Router>
+    )
+  }
+})
 
 // Create component
 const TodoComponent = React.createClass({
+  // these are two lifecycle functions
+  // They happen at a particular point in time during the lifecycle of this componenet
+  // they dont all fire at once, they fire in a particular order
+  // getInitialState fires before render
+
+  // There are many more lifecycle functions that make up the componenet lifecycle
+
+  // Mounting lifecycle functions: These are functions the fire when componenet is mounted to the DOM
+  // 1. getInitialState: Sets up initial state
+  // 2. componentWillMount: Any last minute preparations before componenet mounts
+  // 3. render: Only require lifecycle function. Returns HTML to add to the document
+  // 4. componentDidMount: First fires after component mounts to the DOM. Good place to load external data (database).
+
+  // Updating lifecycle functions:
+  // 1. componentWIllReceiveProps
+  // 2. shouldComponentUpdate
+  // 3, componentWIllUpdate
+  // 4. render
+  // 5. componentDidUpdate
   getInitialState: function() {
     return {
       todos: ['wash up', 'eat lunch', 'take nap', 'buy flowers'],
       age: 27
     }
   },
+
+  // render is the only required lifeycle function
   render: function() {
     let todos = this.state.todos;
     todos = todos.map(function(item, index) {
@@ -36,6 +76,7 @@ const TodoComponent = React.createClass({
     return (
       // This is JSX
       <div id="todo-list">
+        <Link to={'/about'}>About</Link>
         <p>The busiest people have the most leisure...</p>
         <p>{this.state.age}</p>
         <ul>{todos}</ul>
@@ -61,8 +102,22 @@ const TodoComponent = React.createClass({
     this.setState({
       todos: updatedTodos
     })
+  },
+
+  // lifecycle functions
+  componentWillMount: function() {
+    console.log('componenetWillMount')
+  },
+
+  componentDidMount: function() {
+    console.log('componenetDidMount')
+    // good place for any grabbing of external data
+  },
+
+  componentWillUpdate: function() {
+    console.log('componenetWillUpdate')
   }
 })
 
 // Put component into html page
-ReactDom.render(<TodoComponent />, document.getElementById('todo-wrapper'))
+ReactDom.render(<App />, document.getElementById('todo-wrapper'))
